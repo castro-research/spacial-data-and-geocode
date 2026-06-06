@@ -12,8 +12,15 @@ How should we design a solution that supports both location-based discovery arou
 
 ### Define what is region or area
 
+- SRID 4326
+- https://postgis.net/workshops/postgis-intro/geometries.html
+
 ### User location
 
 ### Discovering / Searching Services
 
 
+## Requirements
+
+- Hibernate 7
+- https://docs.hibernate.org/orm/7.0/introduction/html_single/#configuration-properties
