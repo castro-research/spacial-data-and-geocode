@@ -1,8 +1,13 @@
 services:
   db:
-    image: postgres:18
+    build:
+      context: .
+      dockerfile: ./Dockerfile.db
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: development
       POSTGRES_USER: dev
       POSTGRES_PASSWORD: dev
-
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
