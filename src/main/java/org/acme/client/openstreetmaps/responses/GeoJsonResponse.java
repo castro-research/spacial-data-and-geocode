@@ -7,6 +7,7 @@ import org.acme.client.openstreetmaps.enums.GeoJsonType;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.PrecisionModel;
 
 import java.util.Arrays;
 
@@ -30,11 +31,11 @@ public class GeoJsonResponse {
     }
 
     public boolean isPolygon() {
-        return type.equals(GeoJsonType.POLYGON);
+        return GeoJsonType.POLYGON.equals(type);
     }
 
     public Polygon toJtsPolygon() {
-        GeometryFactory geometryFactory = new GeometryFactory();
+        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
         if (!isPolygon()) {
             return geometryFactory.createPolygon();
         }

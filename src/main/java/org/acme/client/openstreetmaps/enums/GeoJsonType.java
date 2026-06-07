@@ -1,10 +1,13 @@
 package org.acme.client.openstreetmaps.enums;
 
+import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public enum GeoJsonType {
     @JsonProperty("Polygon")
     POLYGON,
     @JsonProperty("MultiPolygon")
-    MULTIPOLYGON
+    MULTIPOLYGON,
+    @JsonEnumDefaultValue
+    UNKNOWN
 }
