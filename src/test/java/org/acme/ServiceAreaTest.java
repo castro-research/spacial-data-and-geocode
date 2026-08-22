@@ -5,8 +5,6 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.acme.client.openstreetmaps.OpenStreetMapsClient;
-import org.acme.client.openstreetmaps.enums.GeoJsonType;
-import org.acme.client.openstreetmaps.responses.GeoJsonResponse;
 import org.acme.client.openstreetmaps.responses.OpenStreetMapSearchResponse;
 import org.acme.servicearea.ServiceArea;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
