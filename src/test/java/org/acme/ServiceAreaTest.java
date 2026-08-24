@@ -5,8 +5,8 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.acme.client.openstreetmaps.OpenStreetMapsClient;
-import org.acme.client.openstreetmaps.responses.OpenStreetMapSearchResponse;
 import org.acme.servicearea.ServiceArea;
+import org.acme.support.OsmServiceAreaFactory;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Test;
 
@@ -27,18 +27,13 @@ public class ServiceAreaTest {
     @Test
     @Transactional
     public void shouldCreateServiceAreaAndReturnCreatedPolygon() {
-        Optional<OpenStreetMapSearchResponse> serviceAreaResult = openStreetMapsClient.search("Lisboa, Portugal", "json", 1)
-                .stream()
-                .filter(r -> r.geojson() != null && r.geojson().isPolygon())
-                .findFirst();
+        Optional<ServiceArea> serviceAreaResult = OsmServiceAreaFactory.buildServiceArea(openStreetMapsClient, "Lisboa, Portugal");
 
         if (serviceAreaResult.isEmpty()) {
             throw new RuntimeException("No OpenStreetMaps found");
         }
 
-        var serviceArea = new ServiceArea();
-        serviceArea.setAddress("Lisboa, Portugal");
-        serviceArea.setPolygon(serviceAreaResult.get().geojson().toJtsPolygon());
+        var serviceArea = serviceAreaResult.get();
         em.persist(serviceArea);
         assertNotNull(serviceArea.getId());
     }
