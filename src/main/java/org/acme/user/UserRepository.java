@@ -40,6 +40,8 @@ public class UserRepository {
                               :radius
                             )
                         """, User.class)
+                .addSynchronizedQuerySpace("users")
+                .addSynchronizedQuerySpace("service_areas")
                 .setParameter("lat", lat)
                 .setParameter("lnt", lnt)
                 .setParameter("radius", distanceInMeters)
