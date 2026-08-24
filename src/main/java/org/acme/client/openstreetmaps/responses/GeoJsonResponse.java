@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.acme.client.openstreetmaps.enums.GeoJsonType;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 
@@ -23,29 +24,34 @@ public class GeoJsonResponse {
         this.coordinates = coordinates;
     }
 
-    public double[][][] getPolygons() {
-        if (!isPolygon()) return null;
-
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.convertValue(coordinates, double[][][].class);
+    public boolean isArea() {
+        return type == GeoJsonType.POLYGON || type == GeoJsonType.MULTIPOLYGON;
     }
 
-    public boolean isPolygon() {
-        return GeoJsonType.POLYGON.equals(type);
-    }
-
-    public Polygon toJtsPolygon() {
+    public MultiPolygon toJtsMultiPolygon() {
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
-        if (!isPolygon()) {
-            return geometryFactory.createPolygon();
+        ObjectMapper mapper = new ObjectMapper();
+
+        if (type == GeoJsonType.MULTIPOLYGON) {
+            double[][][][] polygons = mapper.convertValue(coordinates, double[][][][].class);
+            Polygon[] jtsPolygons = Arrays.stream(polygons)
+                    .map(rings -> toPolygon(geometryFactory, rings[0]))
+                    .toArray(Polygon[]::new);
+            return geometryFactory.createMultiPolygon(jtsPolygons);
         }
 
-        double[][] ring = getPolygons()[0];
+        if (type == GeoJsonType.POLYGON) {
+            double[][][] rings = mapper.convertValue(coordinates, double[][][].class);
+            return geometryFactory.createMultiPolygon(new Polygon[]{toPolygon(geometryFactory, rings[0])});
+        }
 
+        return geometryFactory.createMultiPolygon();
+    }
+
+    private static Polygon toPolygon(GeometryFactory geometryFactory, double[][] ring) {
         Coordinate[] coordinates = Arrays.stream(ring)
                 .map(p -> new Coordinate(p[0], p[1]))
                 .toArray(Coordinate[]::new);
-
         return geometryFactory.createPolygon(coordinates);
     }
 }
